@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <title>MIJIT</title>
+    <script>
+      // Get the query parameter from the URL
+      var urlParams = new URLSearchParams(window.location.search);
+      var receivedName = urlParams.get('name');
+
+      function approved(orderId) {
+      var formData = new FormData();
+
+      formData.append('order_id', orderId);
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          if(this.responseText != "norecord"){
+            document.getElementById('successAlert').style.display = 'block';
+            setTimeout(function() {
+              window.location.href = 'schedule.html?name=' + receivedName;
+            }, 3000);
+            
+          } else {
+            alert(this.responseText);
+          }
+        }
+      };
+
+      xhr.open("POST", "approve.php", true);
+      xhr.send(formData);
+    }
+
+    function rejected(orderId) {
+      var formData = new FormData();
+
+      formData.append('order_id', orderId);
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          if(this.responseText != "norecord"){
+            document.getElementById('deniedAlert').style.display = 'block';
+            setTimeout(function() {
+              window.location.href = 'admin.html?name=' + receivedName;
+            }, 3000);
+            
+          } else {
+            alert(this.responseText);
+          }
+        }
+      };
+
+      xhr.open("POST", "rejected.php", true);
+      xhr.send(formData);
+    }
+
+      function dataOrderType(type){
+        if(type === '1'){
+          return "Mijit Tradisional";
+        }
+        if(type === '2'){
+          return "Mijit Balinese";
+        }
+        if(type === '3'){
+          return "Mijit Shiatsu";
+        }
+      }
+
+      function dataOrderStatus(status){
+        if(status === 'N'){
+          return "Menunggu";
+        }
+        if(status === 'Y'){
+          return "Disetujui";
+        }
+        if(status === 'D'){
+          return "Coba lain waktu";
+        }
+      }
+
+      function finishOrder(type, orderId){
+        if(type === 1){
+          approved(orderId);
+        }
+        if(type === 2){
+          rejected(orderId);
+        }
+      }
+
+      // Function to display data in the table
+      function displayData(data) {
+        var dataTableBody = document.querySelector('#dataCustOrder tbody');
+        if (dataTableBody) {
+          data.forEach(function(item) {
+            var row = dataTableBody.insertRow();
+            row.insertCell(0).textContent = item.order_date;
+            row.insertCell(1).textContent = item.order_time;
+            row.insertCell(2).textContent = dataOrderType(item.order_type);
+            row.insertCell(3).innerHTML = '<button type="button" onclick="finishOrder(1,'+ item.id +')" class="btn btn-success btn-sm">Setujui</button>';
+            row.insertCell(4).innerHTML = '<button type="button" onclick="finishOrder(2,'+ item.id +')" class="btn btn-danger btn-sm">Tolak</button>';
+          });
+        }
+      }
+
+      function getAdmOrder() {
+      var xhr = new XMLHttpRequest();
+      var formData = new FormData();
+
+      xhr.open('POST', 'getorderadm.php', true);
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          if(xhr.responseText != "notfound"){
+            var response = JSON.parse(this.responseText); // Parse JSON response
+            displayData(response); // Call function to display data
+
+          } else {
+            document.getElementById('dataCustOrder').style.display = 'none';
+            document.getElementById('emptyAlert').style.display = 'block';
+          }
+        } else {
+          // Handle error
+        }
+      };
+      xhr.onerror = function () {
+        // Handle error
+      };
+      xhr.send(formData);
+    }
+    getAdmOrder();
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a id="linkMenu" class="navbar-brand" href="#">MIJIT</a>
+          <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button> -->
+          <ul class="nav justify-content-end">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <script>            
+                  // Display the received data on the target page
+                  if (receivedName) {
+                    document.write(decodeURIComponent(receivedName));
+                  }
+                </script>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a id="linkShedule" class="dropdown-item" href="#">Jadwal MIJIT</a></li>
+                <li><a id="linkCustomer" class="dropdown-item" href="#">Pelanggan</a></li>
+                <li><a class="dropdown-item" href="index.html">Keluar</a></li>
+
+                <script>
+                    // Get the anchor element by its ID
+                    var linkElementMenu = document.getElementById('linkMenu');
+                    var linkElementCustomer = document.getElementById('linkCustomer');
+                    var linkElementShedule = document.getElementById('linkShedule');
+                
+                    if (linkElementMenu) {
+                      linkElementMenu.href = 'admin.html?name=' + receivedName;
+                    }
+
+                    if (linkElementCustomer) {
+                        linkElementCustomer.href = 'customer.html?name=' + receivedName;
+                    }
+
+                    if (linkElementShedule) {
+                      linkElementShedule.href = 'schedule.html?name=' + receivedName;
+                    }
+                </script>
+              </ul>
+            </li>
+            <li></li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container text-center">
+        <div style="padding: 5rem;"><h1 class="display-1">Pesanan Masuk</h1></div>
+        <div id="emptyAlert" style="display: none;"><h6>Belum ada pesanan MIJIT <a id="linkEmpty" href="#">Cek kembali</a></h1></div>
+        <div id="successAlert" class="alert alert-success" style="display: none;" role="alert">
+          Disetujui. Silahkan cek kemenu Jadwal.
+        </div>
+        <div id="deniedAlert" class="alert alert-danger" style="display: none;" role="alert">
+          Berhasil Ditolak.
+        </div>
+          <table id="dataCustOrder" class="table table-hover">
+            <thead>
+              <tr>
+                  <th>Tanggal Pesanan</th>
+                  <th>Waktu</th>
+                  <th>Pesanan</th>
+                  <th></th>
+                  <th></th>
+              </tr>
+          </thead>
+            <tbody>
+              <!-- Data will be dynamically added here -->
+            </tbody>
+          </table>
+    </div>
+    <script>
+      var linkElementEmpty = document.getElementById('linkEmpty');
+      if (linkElementEmpty) {
+        linkElementEmpty.href = 'admin.html?name=' + receivedName;
+      }
+    </script>
+</body>
+</html>

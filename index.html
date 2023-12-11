@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <title>MIJIT</title>
+    <script>
+      function registerUser() {
+      var email = document.getElementById('emailR').value;
+      var password = document.getElementById('passwordR').value;
+      var sex = document.getElementById('sexR').value;
+      var name = document.getElementById('nameR').value;
+
+      var xhr = new XMLHttpRequest();
+      var formData = new FormData();
+
+      var divR = document.getElementById('divErrorAlert');
+
+      
+      if(!name || name == ""){
+        divR.textContent = 'Mohon isi data nama';
+        divR.style.display = 'block';
+        return;
+      }
+      if(!email || email == ""){
+        divR.textContent = 'Mohon isi data email';
+        divR.style.display = 'block';
+        return;
+      }
+      if(!password || password == ""){
+        divR.textContent = 'Mohon isi data password';
+        divR.style.display = 'block';
+        return;
+      }
+      if(!sex || sex == ""){
+        divR.textContent = 'Mohon isi data jenis kelamin';
+        divR.style.display = 'block';
+        return;
+      }
+
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('sex', sex);
+      formData.append('name', name);
+
+      xhr.open('POST', 'register.php', true);
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          // Handle success response
+          if(xhr.responseText != "error") {
+            var url = 'menu.html?name=' + name + '&id=' + xhr.responseText;
+            if(email === "admin@gmail.com"){
+              url = 'admin.html?name=' + name
+            }
+            window.location.href = url;
+          } else {
+            divR.style.display = 'block';
+          }
+        } else {
+          // Handle error
+        }
+      };
+      xhr.onerror = function () {
+        // Handle error
+      };
+      xhr.send(formData);
+    }
+
+    function loginUser() {
+      var email = document.getElementById('emailL').value;
+      var password = document.getElementById('passwordL').value;
+
+      var xhr = new XMLHttpRequest();
+      var formData = new FormData();
+
+      var divL = document.getElementById('divLoginAlert');
+
+      if(!email || email == ""){
+        divL.textContent = 'Mohon isi data email';
+        divL.style.display = 'block';
+        return;
+      }
+      if(!password || password == ""){
+        divL.textContent = 'Mohon isi data password';
+        divL.style.display = 'block';
+        return;
+      }
+
+      formData.append('email', email);
+      formData.append('password', password);
+
+      xhr.open('POST', 'login.php', true);
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          if(xhr.responseText != "notfound" &&  xhr.responseText != "notcorrect"){
+            var data = JSON.parse(xhr.responseText);
+            var url = 'menu.html?name=' + encodeURIComponent(data["name"]) + '&id=' + encodeURIComponent(data["id"]);
+            if(data["email"] === "admin@gmail.com"){
+              url = 'admin.html?name=' + encodeURIComponent(data["name"])
+            }
+            window.location.href = url;
+          } else {
+            divL.style.display = 'block';
+          }
+        } else {
+          // Handle error
+        }
+      };
+      xhr.onerror = function () {
+        // Handle error
+      };
+      xhr.send(formData);
+    }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">MIJIT</a>
+          <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button> -->
+          <ul class="nav justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#loginModal">Masuk</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#registerModal">Daftar</a>
+            </li>
+            </li>
+          </ul>
+        </div>
+    </nav>
+    <!-- Corousel -->
+    <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="img/backgroundMIJIT.jpg" style="height: 575px" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h1>MIJIT-IN KAMU!</h5>
+              <p>Rasakan Pijatan terbaik disetiap inci tubuh anda!</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="img/mijittype1.PNG" style="height: 575px" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h1>MIJIT Tradisional</h5>
+              <p>Rasakan pijat yang terkenal di Indonesia dengan istilah urut!</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="img/mijittype2.PNG" style="height: 575px" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h1>MIJIT Balinese</h5>
+              <p>Rasakan pijat tradisional yang berkembang di Provinsi Bali!</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="img/mijittype3.PNG" style="height: 575px" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h1 style="color: black;">MIJIT Shiatsu</h5>
+              <p style="color: black;">Rasakan pijat terapi yang berasal dari Jepang!</p>
+            </div>
+          </div>
+        </div>
+        <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span> -->
+        </button>
+      </div>
+
+    <!-- Modal Login-->
+    <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Masuk dulu aja baru MIJIT </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div id="divLoginAlert" class="alert alert-danger" style="display: none;" role="alert">
+                    Email dan Password Salah
+                  </div>
+                      <div class="form-floating mb-3">
+                          <input type="email" class="form-control" name="emailL" id="emailL" placeholder="name@example.com">
+                          <label for="emailL">Alamat Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="password" class="form-control" name="passwordL" id="passwordL" placeholder="Password">
+                          <label for="passwordL">Kata Sandi</label>
+                      </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                    <button type="button" onclick="loginUser()" class="btn btn-primary">Masuk</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Register-->
+    <div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Daftar dulu baru bisa MIJIT </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                      <div id="divErrorAlert" class="alert alert-danger" style="display: none;" role="alert">
+                        Gagal email sudah terdaftar
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input type="text" name="nameR" id="nameR" class="form-control" placeholder="Nama">
+                        <label for="nameR">Nama</label>
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input type="email" name="emailR" id="emailR" class="form-control" placeholder="name@example.com">
+                        <label for="emailR">Alamat Email</label>
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input type="password" name="passwordR" id="passwordR" class="form-control" placeholder="Kata Sandi">
+                        <label for="passwordR">Kata Sandi</label>
+                      </div>
+                      <div class="form-floating mb-3">
+                        <select class="form-select" name="sexR" id="sexR" aria-label="Floating label select example">
+                          <option value="P">Perempuan</option>
+                          <option value="L">Laki - laki</option>
+                        </select>
+                        <label for="sexR">Pilih Jenis Kelamin</label>
+                      </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Lain Kali</button>
+                    <button type="button" onclick="registerUser()" class="btn btn-primary">Kirim</button>
+                </div>
+              </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
